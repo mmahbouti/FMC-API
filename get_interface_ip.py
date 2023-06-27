@@ -2,6 +2,7 @@ import requests
 import json
 import urllib3
 from ipaddress import IPv4Network
+import getpass
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def generate_token(fmc_host,port,api_version,username,password):
@@ -48,7 +49,6 @@ def get_device_information(fmc_host,port,api_version,access_token,domain_uuid):
         list_result.append(d)
 
     return list_result
-        #print (name_HA, ftd_name , acl_name,ftd_ip)
 
 def detect_HA_devices():
     
@@ -77,9 +77,7 @@ def get_network_interfaces(fmc_host,port,api_version,access_token,domain_uuid):
     for entity in list_devices_info:
         
         device_id = entity["FTD_ID"]
-        
-        #["interfaces_ip_address":{"10.252.15.0/24","10.252.16.0/24"}]
-        
+                
         ip_interfaces_list=[]
         
         for type_interface in type_interfaces:
@@ -96,85 +94,20 @@ def get_network_interfaces(fmc_host,port,api_version,access_token,domain_uuid):
                         netmask = (x["ipv4"]['static']['netmask'])
                         interface_ip = str(IPv4Network(str(network_id + "/" + netmask), strict=False))
                         ip_interfaces_list.append(interface_ip)
-                        #print(interface_ip)
-        #print(ip_interfaces_list)
         entity["ip-interfaces"] = ip_interfaces_list
-        #print(entity["ip-interfaces"])
-        #print(entity)
-                #print("---------------------------")
-            
-        #print("==============================")
     return list_devices_info
     
     
     #print (list_devices_info)
     
     
-    '''    
-    type_interfaces = ['physicalinterfaces','redundantinterfaces','etherchannelinterfaces','subinterfaces','vlaninterfaces','loopbackinterfaces','vniinterfaces']
-    
-    #aaf366d2-35ff-11ec-8d54-e7545ff76e05
-    #e276abec-e0f2-11e3-8169-6d9ed49b625f
-    #3d3f5ea4-35df-11ec-8fab-bd4ad3c95d86
-    interface_url = f"https://{fmc_host}:{port}/api/fmc_config/{api_version}/domain/global/devices/devicerecords/3d3f5ea4-35df-11ec-8fab-bd4ad3c95d86/physicalinterfaces?expanded=true&limit={limit}&offset={offset}"
-    #interface_url = f"https://{fmc_host}:{port}/api/fmc_config/{api_version}/domain/global/devices/devicerecords/aaf366d2-35ff-11ec-8d54-e7545ff76e05/subinterfaces?expanded=true&limit={limit}&offset={offset}"
-    
-    interface_response = requests.get(interface_url, headers=headers, verify=False).json()
-    #print(interface_response)
-    result1 = interface_response['items']
-    #print(result1)
-    for entity in result1:
-        print (entity)
-
-    if pages_count >= 1:
-        for i in range (1,10):
-            offset = i*1000
-            device_url = f"https://{fmc_host}:{port}/api/fmc_config/{api_version}/domain/global/devices/devicerecords?expanded=true&limit={limit}&offset={offset}"
-            device_response = requests.get(device_url, headers=headers, verify=False).json().
-            
-
-    #result = []
-    #result = result + device_response['items']
-    
-
-    for i in range (1,10):
-        offset = i*1000
-        device_url = f"https://{fmc_host}:{port}/api/fmc_config/{api_version}/domain/global/devices/devicerecords?expanded=true&limit={limit}&offset={offset}"
-        
-        if type_address == 'host':
-            network_addresses_url = f"https://{fmc_host}:{port}/api/fmc_config/{api_version}/domain/global/object/hosts?expanded=true&limit={limit}&offset={offset}"
-        elif type_address == 'fqdn':
-            network_addresses_url = f"https://{fmc_host}:{port}/api/fmc_config/{api_version}/domain/global/object/fqdns?expanded=true&limit={limit}&offset={offset}"
-        elif type_address == 'network':
-            network_addresses_url = f"https://{fmc_host}:{port}/api/fmc_config/{api_version}/domain/global/object/networks?expanded=true&limit={limit}&offset={offset}"
-        elif type_address == 'range':
-            network_addresses_url = f"https://{fmc_host}:{port}/api/fmc_config/{api_version}/domain/global/object/ranges?expanded=true&limit={limit}&offset={offset}"
-        
-        device_response = requests.get(device_url, headers=headers, verify=False).json()
-        
-        if device_response != {'links': {}, 'paging': {'offset': 0, 'limit': 0, 'count': 0, 'pages': 0}}:
-            result = result + device_response['items']
-        else:
-            break
-    print(result)
-
-    for entity in result:
-        if entity['value'] == value_address:
-            print(entity['name'])
-            
-    
-    for entity in result:
-        print(entity['name'],entity['value'])
-    
-    '''
-
 
 if __name__ == '__main__':
 
-    username = 'mahbouti'
-    password = 'K!ng8934'
-    fmc_host = '172.16.50.200'
-    port = '443'
+    username = input("Enter Your FMC Username : ")
+    password = getpass.getpass()
+    fmc_host = input("Enter Your FMC IP Address : ")
+    port = input("Enter Your FMC Port : ")
     api_version = "v1"
 
     access_token,domain_uuid = generate_token(fmc_host,port,api_version,username,password)
