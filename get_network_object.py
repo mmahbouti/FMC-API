@@ -1,6 +1,7 @@
 import requests
 import json
 import urllib3
+import getpass
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def generate_token(fmc_host,port,api_version,username,password):
@@ -76,12 +77,16 @@ def get_object_network(fmc_host,port,api_version,access_token,domain_uuid,value_
 
 if __name__ == '__main__':
 
-    username = 'mahbouti'
-    password = 'K!ng8934'
-    fmc_host = '172.16.50.200'
-    port = '443'
+    username = input("Enter Your FMC Username : ")
+    password = getpass.getpass()
+    fmc_host = input("Enter Your FMC IP Address : ")
+    port = input("Enter Your FMC Port : ")
+    address = input("Enter Your Address : ")
+    address_type = input("Enter Your Address Type(host/fqdn/network/range) : ")
     api_version = "v1"
 
     access_token,domain_uuid = generate_token(fmc_host,port,api_version,username,password)
 
-    get_object_network(fmc_host,port,api_version,access_token,domain_uuid,'10.253.200.4-10.253.200.6','range')
+
+    #get_object_network(fmc_host,port,api_version,access_token,domain_uuid,'10.253.200.4-10.253.200.6','range')
+    get_object_network(fmc_host,port,api_version,access_token,domain_uuid,address,address_type)
